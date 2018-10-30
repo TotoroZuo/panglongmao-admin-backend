@@ -7,7 +7,7 @@ const router = new Router()
  * 用户接口
  */
 // 用户注册
-router.post('/user/register', UserController.create);
+router.get('/user/register', UserController.create);
 // 用户登录
 router.post('/user/login', UserController.login);
 // 删除用户

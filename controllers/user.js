@@ -1,4 +1,4 @@
-const userModel = require('../modules/user');
+const userModel = require('../models/user');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const bcrypt = require('bcryptjs');
@@ -13,8 +13,7 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async create(ctx) {
-        const user = ctx.request.body;
-
+        const user = ctx.request.query;
         if (user.username && user.password) {
             // 查询用户名是否重复
             const existUser = await userModel.findUserByName(user.username)

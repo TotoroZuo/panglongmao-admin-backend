@@ -11,8 +11,14 @@ const users = require('./routes/users')
 
 // 配置信息
 const config = require('./config/config')
-// 请求拦截
-const interceptors = require('./middlreware/interceptors')
+
+const jwt = require('koa-jwt')
+
+// // 请求拦截
+const interceptors = require('./config/interceptors')
+app.use(interceptors())
+// error handler
+onerror(app)
 // 过滤不用jwt验证
 app.use(jwt({
   secret: config.SECRET
@@ -20,13 +26,9 @@ app.use(jwt({
   path: [
     // 登录接口
     /^\/login/,
+    /^\/user\/register/,
   ]
 }))
-
-app.use(interceptors())
-// error handler
-onerror(app)
-
 // middlewares
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
