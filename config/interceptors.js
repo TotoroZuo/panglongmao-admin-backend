@@ -14,9 +14,9 @@ module.exports = function () {
             if (token) {
                 try {
                     let payload = await verify(token.split(' ')[1], config.SECRET) // 解密payload，获取用户名和ID
-                    ctx.user = {
-                        name: payload.name,
-                        id: payload.id
+                    console.log(payload)
+                    ctx.state.user = {
+                        openid: payload.openid
                     }
                 } catch (err) {
 
@@ -26,15 +26,15 @@ module.exports = function () {
             }
             await next()
         } catch (err) {
-
             if (err.status === 401) {
                 ctx.status = 401;
                 ctx.body = statusCode.ERROR_401('unauthorized，请求需要用户的身份认证！');
-            } else {
-
-                err.status = 404;
-                ctx.body = statusCode.ERROR_404('不存在的用户');
+            } else if (err.name === 'UnauthorizedError') {
+                await next()
+            }else{
+                throw err
             }
         }
+        
     }
 }

@@ -9,7 +9,15 @@ const sequelize = new Sequelize('test', 'root', '', {
         supportBigNumbers: true,
         bigNumberStrings: true
     },
-
+    define: {
+        charset: 'utf8mb4',
+        dialectOptions: {
+            charset: "utf8mb4",
+            collate: "utf8mb4_unicode_ci",
+            supportBigNumbers: true,
+            bigNumberStrings: true
+        }
+    },
     pool: {
         max: 5,
         min: 0,

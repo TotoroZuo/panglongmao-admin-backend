@@ -12,23 +12,23 @@ const index = require('./routes/index') // 路由输入口
 // 配置信息
 const config = require('./config/config')
 
-const jwt = require('koa-jwt')
+const jwt = require('koa-jwt') // 路有权限控制
 
-// // 请求拦截
-const interceptors = require('./config/interceptors')
-app.use(interceptors())
+
 // error handler
 onerror(app)
 // 过滤不用jwt验证
+// // 请求拦截
+const interceptors = require('./config/interceptors')
+app.use(interceptors())
 app.use(jwt({
   secret: config.SECRET
 }).unless({
   path: [
-    // 登录接口
-    /^\/login/,
-    /^\/user\/register/,
+    '/user/getToken'
   ]
 }))
+
 // middlewares
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']

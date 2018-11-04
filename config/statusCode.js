@@ -26,10 +26,24 @@ const statusCode = {
             msg
         }
     },
+    // 获取openid，缺少code
+    USER_6001: (msg) => {
+        return {
+            code: 6001,
+            msg
+        }
+    },
 
     SUCCESS_200: (msg, data) => {
         return {
             code: 200,
+            msg,
+            data,
+        }
+    },
+    RETURN_DATA: (code,msg, data) => {
+        return {
+            code,
             msg,
             data,
         }
