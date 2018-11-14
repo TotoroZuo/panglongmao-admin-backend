@@ -8,7 +8,11 @@ const logger = require('koa-logger')
 
 const index = require('./routes/index') // 路由输入口
 
+app.use(require('koa-static')(__dirname + '/public'))
 
+app.use(views(__dirname + '/views', {
+  extension: 'pug'
+}))
 // 配置信息
 const config = require('./config/config')
 
@@ -35,11 +39,7 @@ app.use(bodyparser({
 }))
 app.use(json())
 app.use(logger())
-app.use(require('koa-static')(__dirname + '/public'))
 
-app.use(views(__dirname + '/views', {
-  extension: 'pug'
-}))
 
 // logger
 app.use(async (ctx, next) => {
