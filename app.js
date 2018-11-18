@@ -6,40 +6,38 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
-const index = require('./routes/index') // 路由输入口
-
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
   extension: 'pug'
 }))
+// error handler
+onerror(app)
+
 // 配置信息
 const config = require('./config/config')
 
 const jwt = require('koa-jwt') // 路有权限控制
-
-
-// error handler
-onerror(app)
-// 过滤不用jwt验证
 // // 请求拦截
 const interceptors = require('./config/interceptors')
 app.use(interceptors())
+// 过滤不用jwt验证
 app.use(jwt({
   secret: config.SECRET
 }).unless({
   path: [
-    '/user/getToken'
+    '/wx/user/getToken',
+    '/admin/user/doLogin',
+    '/admin/user/createUserInfo'
   ]
 }))
 
 // middlewares
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
-
 
 // logger
 app.use(async (ctx, next) => {
@@ -49,12 +47,15 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
 
+const wxRoutes = require('./routes/wx/index') // 路由输入口
 // routes
-app.use(index.routes(), index.allowedMethods())
-
+app.use(wxRoutes.routes(), wxRoutes.allowedMethods())
+const adminRoutes = require('./routes/admin/index') // 路由输入口
+// routes
+app.use(adminRoutes.routes(), adminRoutes.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
-});
+})
 
 module.exports = app
