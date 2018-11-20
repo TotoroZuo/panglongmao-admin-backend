@@ -3,7 +3,7 @@ const app = new Koa()
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
+const koaBody = require('koa-body')
 const logger = require('koa-logger')
 
 app.use(require('koa-static')(__dirname + '/public'))
@@ -28,13 +28,17 @@ app.use(jwt({
   path: [
     '/wx/user/getToken',
     '/admin/user/doLogin',
-    '/admin/user/createUserInfo'
+    '/admin/user/createUserInfo',
+    '/admin/common/upload'
   ]
 }))
 
 // middlewares
-app.use(bodyparser({
-  enableTypes: ['json', 'form', 'text']
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    maxFileSize: 200000 * 1024 * 1024 // 设置上传文件大小最大限制，默认2M
+  }
 }))
 app.use(json())
 app.use(logger())
