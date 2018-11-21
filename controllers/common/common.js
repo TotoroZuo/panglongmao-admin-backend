@@ -3,11 +3,21 @@ const qiniu = require('qiniu')
 const fs = require('fs')
 const path = require('path')
 const statusCode = require('../../config/statusCode') // 状态码统一管理
+
+
+function getSuffix(fileName) {
+  return fileName.split('.').pop()
+}
+// 重命名
+function Rename(fileName) {
+  return Math.random().toString(16).substr(2) + '.' + getSuffix(fileName)
+}
+
 /**
    * [description] 上传文件
    * @param {String} ctx  请求上下文
    */
-function upToQiniu (newName, readStream) {
+function upToQiniu(fileName, readableStream) {
   const accessKey = 'rORkrVtCj3ThaOGef1lM8u_cAOcHLwXAMv5E1gdV'
   const secretKey = 'UU1_FXShOqcAR9H-41k3_gUpb-aaBzfO8h4f8vLx'
 
@@ -32,8 +42,9 @@ function upToQiniu (newName, readStream) {
   const formUploader = new qiniu.form_up.FormUploader(config)
   const putExtra = new qiniu.form_up.PutExtra()
   // 文件上传
+
   return new Promise((resolve, reject) => {
-    formUploader.putFile(uploadToken, newName, readStream, putExtra, function (respErr, respBody, respInfo) {
+    formUploader.putStream(uploadToken, fileName, readableStream, putExtra, function (respErr, respBody, respInfo) {
       if (respErr) {
         reject(respErr)
       }
@@ -45,23 +56,46 @@ function upToQiniu (newName, readStream) {
     })
   })
 }
-class CommonController {
-  async upload (ctx) {
-    const _file = ctx.request.files.file // 前台type=file post过来的文件
-    if (!_file) {
-      ctx.body = statusCode.RETURN_DATA(6001, '请上传文件', {})
-    }
-    console.log(_file.path)
-    const readStream = fs.readFileSync(_file.path) // 文件流对象
-    const newName = Math.random().toString(16).substr(2) + '-' + _file.name
 
-    await upToQiniu(newName, readStream).then(res => {
-      console.log(res)
-      ctx.body = res
-    }).catch(err => {
-      console.log(err)
-      ctx.body = err
-    })
+// 上传到本地服务器
+// function uploadFile(ctx, options) {
+//   const file = ctx.request.files.file
+//   const fileType = options.fileType
+//   const filePath = path.join(options.path, fileType)
+//   const fileName = Rename(file.name)
+//   const saveTo = path.join(filePath, fileName)
+//   const confirm = mkdirsSync(filePath)
+//   if (!confirm) {
+//     return
+//   }
+//   const reader = fs.createReadStream(file.path);
+//   const writer = fs.createWriteStream(saveTo);
+//   reader.pipe(writer);
+//   console.log('start uploading...')
+
+//   return {
+//     imgName: fileName,
+//     imgPath: saveTo
+//   }
+// }
+class CommonController {
+  static async upload (ctx) {
+    ctx.set("Access-Control-Allow-Origin", "*");
+    // 上传到七牛
+    const file = ctx.request.files.file
+    const fileName = Rename(file.name)
+
+    const readableStream = fs.createReadStream(file.path);
+    // 上传七牛
+    const qiniu = await upToQiniu(fileName, readableStream)
+    if (qiniu && qiniu.key) {
+      ctx.body = statusCode.RETURN_DATA(200, '上传成功', {
+        imgUrl: `http://upload.zuolongfei.me/${qiniu.key}`
+      })
+    }else{
+      ctx.body = statusCode.RETURN_DATA(600, '上传失败', {})
+    }
+    
   }
 }
 
