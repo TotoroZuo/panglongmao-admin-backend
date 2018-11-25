@@ -10,19 +10,8 @@ class ArticleModel {
      * @param data
      * @returns {Promise<*>}
      */
-  static async createArticle (info) {
-    return await Article.create({
-      title: info.title,
-      introduction: info.introduction,
-      author: info.author,
-      tag: info.tag,
-      content: info.content,
-      category: info.category,
-      recommend: info.recommend,
-      status: info.status,
-      createdAt: info.createdAt,
-      updatedAt: info.updatedAt
-    })
+  static async createArticle (newArticle) {
+    return await Article.create(newArticle)
   }
 
   /**
@@ -32,17 +21,7 @@ class ArticleModel {
      * @returns {Promise.<boolean>}
      */
   static async updateArticle (aid, info) {
-    return await Article.update({
-      title: info.title,
-      introduction: info.introduction,
-      author: info.author,
-      tag: info.tag,
-      content: info.content,
-      category: info.category,
-      recommend: info.recommend,
-      status: info.status,
-      updatedAt: info.updatedAt
-    }, {
+    return await Article.update(info, {
       where: {
         aid
       },
@@ -56,30 +35,25 @@ class ArticleModel {
      */
   static async getArticleList (params) {
     let ret = null
-    let page = params.page ? parseInt(params.page) : 1
-    let category = params.category ? params.category : ''
-    let sort = params.sort ? params.sort : ''
-    const pageNums = 10
+    const page = params.page ? parseInt(params.page) : 1
+    const pageSize = params.pageSize ? parseInt(params.pageSize) : 10
+    const category = params.category ? params.category : ''
+    const sort = params.sort ? params.sort : ''
 
-    if (category) {
-      ret = await Article.findAndCountAll({
-        limit: pageNums, // 每页10条
-        offset: (page - 1) * pageNums,
-        where: {
-          category: category
-        }
-      })
-    } else {
-      ret = await Article.findAndCountAll({
-        limit: pageNums, // 每页10条
-        offset: (page - 1) * pageNums
-      })
+    let options = {
+      limit: pageSize, // 每页10条
+      offset: (page - 1) * pageSize
     }
-
+    if (category) {
+      options.where = {
+        category: category
+      }
+    }
+    ret = await Article.findAndCountAll(options)
     return {
       lists: ret.rows,
       current_page: parseInt(page),
-      pageNums,
+      pageSize,
       total: ret.count,
       total_pages: Math.ceil(ret.count / 10)
     }

@@ -16,7 +16,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     // 文章简介
     introduction: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: false,
       field: 'introduction'
     },
@@ -32,6 +32,18 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       field: 'tag'
     },
+    // 文章来源
+    origin: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      field: 'origin'
+    },
+    // 文章缩略图
+    subPic: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      field: 'subPic'
+    },
     // 文章内容
     content: {
       type: DataTypes.TEXT,
@@ -43,6 +55,12 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
       field: 'category'
+    },
+    // 排序
+    weight: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     },
     // 是否为推荐
     recommend: {
@@ -57,13 +75,19 @@ module.exports = function (sequelize, DataTypes) {
       field: 'browser',
       defaultValue: 0
     },
-    createdAt: {
+    time: {
+      type: DataTypes.DATE,
+      get () {
+        return moment(this.getDataValue('time')).format('YYYY-MM-DD HH:mm:ss')
+      }
+    },
+    createdTime: {
       type: DataTypes.DATE,
       get () {
         return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss')
       }
     },
-    updatedAt: {
+    updatedTime: {
       type: DataTypes.DATE,
       get () {
         return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD HH:mm:ss')
@@ -73,7 +97,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: 'status',
-      defaultValue: 1
+      defaultValue: 1 // 1 草稿 2正式发布
     },
     isDel: {
       type: DataTypes.INTEGER,

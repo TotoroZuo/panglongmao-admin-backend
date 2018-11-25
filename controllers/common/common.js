@@ -1,15 +1,13 @@
 
 const qiniu = require('qiniu')
 const fs = require('fs')
-const path = require('path')
 const statusCode = require('../../config/statusCode') // 状态码统一管理
 
-
-function getSuffix(fileName) {
+function getSuffix (fileName) {
   return fileName.split('.').pop()
 }
 // 重命名
-function Rename(fileName) {
+function Rename (fileName) {
   return Math.random().toString(16).substr(2) + '.' + getSuffix(fileName)
 }
 
@@ -17,7 +15,7 @@ function Rename(fileName) {
    * [description] 上传文件
    * @param {String} ctx  请求上下文
    */
-function upToQiniu(fileName, readableStream) {
+function upToQiniu (fileName, readableStream) {
   const accessKey = 'rORkrVtCj3ThaOGef1lM8u_cAOcHLwXAMv5E1gdV'
   const secretKey = 'UU1_FXShOqcAR9H-41k3_gUpb-aaBzfO8h4f8vLx'
 
@@ -80,22 +78,21 @@ function upToQiniu(fileName, readableStream) {
 // }
 class CommonController {
   static async upload (ctx) {
-    ctx.set("Access-Control-Allow-Origin", "*");
+    ctx.set('Access-Control-Allow-Origin', '*')
     // 上传到七牛
     const file = ctx.request.files.file
     const fileName = Rename(file.name)
 
-    const readableStream = fs.createReadStream(file.path);
+    const readableStream = fs.createReadStream(file.path)
     // 上传七牛
     const qiniu = await upToQiniu(fileName, readableStream)
     if (qiniu && qiniu.key) {
       ctx.body = statusCode.RETURN_DATA(200, '上传成功', {
         imgUrl: `http://upload.zuolongfei.me/${qiniu.key}`
       })
-    }else{
+    } else {
       ctx.body = statusCode.RETURN_DATA(600, '上传失败', {})
     }
-    
   }
 }
 

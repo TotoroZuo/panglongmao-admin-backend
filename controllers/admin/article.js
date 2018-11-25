@@ -10,16 +10,7 @@ class ArticleController {
      */
   static async createNewArticle (ctx) {
     const info = ctx.request.body
-    // const info = {
-    //   title: 'panglongmao',
-    //   introduction: '测试简介',
-    //   author: '左龙飞',
-    //   tag: '便签1,便签2',
-    //   content: '文章内容',
-    //   category: '1',
-    //   recommend: 0,
-    //   status: 1
-    // }
+
     if (!info) {
       ctx.body = statusCode.RETURN_DATA(500, '缺少参数', {})
       return false
@@ -29,13 +20,18 @@ class ArticleController {
       introduction: info.introduction,
       author: info.author,
       tag: info.tag,
-      content: info.content,
       category: info.category,
+      subPic: info.subPic,
+      origin: info.origin,
+      content: info.content,
+      time: info.time,
       recommend: info.recommend,
+      weight: info.weight,
       status: info.status,
-      createdAt: new Date().getTime(),
-      updatedAt: new Date().getTime()
+      createdTime: new Date().getTime(),
+      updatedTime: new Date().getTime()
     }
+
     await articleModel.createArticle(newArticle).then(res => {
       ctx.body = statusCode.RETURN_DATA(200, '文章创建成功', res)
     })
