@@ -78,6 +78,19 @@ class ArticleController {
       ctx.body = statusCode.RETURN_DATA(200, '获取文章列表成功', res)
     })
   }
+  /**
+   * [description] 获取文章列表
+   * @param {*} ctx
+   */
+  static async updateArticleStatus (ctx) {
+    const params = ctx.request.body
+    const aid = params.aid
+    let info = { ...params }
+    delete info.aid
+    await articleModel.updateArticle(aid, info).then(res => {
+      ctx.body = statusCode.RETURN_DATA(200, '修改成功', res)
+    })
+  }
 }
 
 module.exports = ArticleController

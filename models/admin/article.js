@@ -25,7 +25,7 @@ class ArticleModel {
       where: {
         aid
       },
-      fields: ['aid', 'title', 'author', 'tag', 'introduction', 'content', 'category', 'recommend', 'browser', 'status', 'createdAt', 'updatedAt']
+      fields: ['aid', 'title', 'author', 'tag', 'introduction', 'content', 'category', 'recommend', 'browser', 'status', 'createdAt', 'updatedAt', 'isDel']
     })
   }
 
@@ -42,12 +42,13 @@ class ArticleModel {
 
     let options = {
       limit: pageSize, // 每页10条
-      offset: (page - 1) * pageSize
+      offset: (page - 1) * pageSize,
+      where: {
+        isDel: 0
+      }
     }
     if (category) {
-      options.where = {
-        category: category
-      }
+      options.where.category = category
     }
     ret = await Article.findAndCountAll(options)
     return {

@@ -19,6 +19,7 @@ router.post(prefix + '/menu/getMenus', MenuController.getMenus)
 router.post(prefix + '/article/addNewArticle', ArticleController.createNewArticle)
 router.post(prefix + '/article/updateArticle', ArticleController.updateArticle)
 router.post(prefix + '/article/getArticleList', ArticleController.getArticleList)
+router.post(prefix + '/article/updateArticleStatus', ArticleController.updateArticleStatus)
 // 文件上传
 router.post(prefix + '/common/upload', CommonController.upload)
 
