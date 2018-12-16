@@ -10,5 +10,7 @@ const router = new Router()
 router.get(prefix + '/user/getToken', UserController.getUerOpenid)
 // 存储用户信息
 router.post(prefix + '/user/storeUser', UserController.storeUserInfo)
+// 存储用户信息
+router.post(prefix + '/user/findUser', UserController.findUser)
 
 module.exports = router

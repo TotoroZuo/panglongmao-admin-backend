@@ -88,6 +88,22 @@ class UserController {
     }
     // ctx.body = statusCode.RETURN_DATA(200,'用户信息更新成功', {})
   }
+  static async findUser (ctx) {
+    const openid = ctx.state.user.openid
+
+    if (!openid) {
+      ctx.body = statusCode.RETURN_DATA(500, '缺少参数', {})
+      return false
+    }
+
+    const user = await userModel.findUserByOpenid(openid)
+    if (user) {
+      ctx.body = statusCode.RETURN_DATA(200, '获取信息更新成功', user)
+    } else {
+      ctx.body = statusCode.RETURN_DATA(404, '用户信息不存在', {})
+    }
+    // ctx.body = statusCode.RETURN_DATA(200,'用户信息更新成功', {})
+  }
 }
 
 module.exports = UserController
